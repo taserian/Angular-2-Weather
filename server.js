@@ -1,29 +1,47 @@
 const express = require("express");
 const compression = require("compression");
-const https = require("https");
+const http = require("http");
+const request = require("request");
+const cors = require("cors");
 
 process.on("uncaughtException", console.error);
 
 const app = express();
+cors({origin: true});
 app.use(compression());
+app.use(cors());
 
-app.get("/api/weather/:woeId", function (req, res) {
-    const woeId = req.params.woeId;
-    const requestPath = "/v1/public/yql?q=select%20item.condition.code%2C%20item.condition.temp%20from%20weather.forecast%20" +
-        `where%20woeid%3D${woeId}%20and%20u%3D'c'&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`;
-    return https.get({
-        host: "query.yahooapis.com",
-        path: requestPath
-    }, function(response) {
-        var body = "";
-        response.on("data", function (d) {
-            body += d;
-        });
-        response.on("end", function () {
-            const parsed = JSON.parse(body);
-            res.status(200).send(parsed);
-        });
-    });
+app.get("/api/weather/:cityId", function (req, res) {
+    const cityId = req.params.cityId;
+    const url = "http://api.openweathermap.org/data/2.5/weather?id=" + cityId.toString() +
+                 "&units=metric&appid=7df02a5b97bde5d3aaa63585f581265a";
+    request.get(url, 
+            function(err, response, body){
+                if (!err) {
+                    var q = JSON.parse(body);
+                    var weatherObj = q.weather[0];
+                    var weatherData = { "code": weatherObj.id, 
+                                        "description": weatherObj.description, 
+                                        "temp": q.main.temp };
+                    res.json(weatherData);
+                    //console.log(JSON.parse(body));
+                    //res.json(body);
+                }
+            }
+    );
+    // return http.get({
+    //     host: "api.openweathermap.org",
+    //     path: requestPath
+    // }, function(response) {
+    //     var body = "";
+    //     response.on("data", function (d) {
+    //         body += d;
+    //     });
+    //     response.on("end", function () {
+    //         const parsed = JSON.parse(body);
+    //         res.status(200).send(parsed);
+    //     });
+    // });
 });
 
 app.use("/app", express.static(__dirname + "/app"));

@@ -3,26 +3,15 @@ import { Http } from "@angular/http";
 import "rxjs/add/operator/toPromise";
 
 interface WeatherApiResponse {
-    query: {
-        count: number;
-        created: string;
-        lang: string;
-        results: {
-            channel: {
-                item: {
-                    condition: {
-                        code: string;
-                        temp: string;
-                    }
-                }
-            }
-        }
-    };
+    code: number;
+    description: string;
+    temp: number;
 }
 
 export interface WeatherInformation {
     city: string;
     code: number;
+    description: string;
     temperature: number;
 }
 
@@ -35,15 +24,15 @@ export interface City {
 @Injectable()
 export class WeatherService {
     cities = [
-        {name: "Bogota", imageSrc: "img/bogota.jpg", woeId: "368148"},
-        {name: "Cape Town", imageSrc: "img/cape-town.jpg", woeId: "1591691"},
-        {name: "London", imageSrc: "img/london.jpg", woeId: "44418"},
-        {name: "New Delhi", imageSrc: "img/delhi.jpg", woeId: "28743736"},
-        {name: "New York", imageSrc: "img/new-york.jpg", woeId: "2459115"},
-        {name: "Paris", imageSrc: "img/paris.jpg", woeId: "615702"},
-        {name: "Sydney", imageSrc: "img/sydney.jpg", woeId: "1105779"},
-        {name: "Tokyo", imageSrc: "img/tokyo.jpg", woeId: "1118370"},
-        {name: "Vancouver", imageSrc: "img/vancouver.jpg", woeId: "9807"}
+        {name: "Bogota", imageSrc: "img/bogota.jpg", woeId: "3688689"},
+        {name: "Cape Town", imageSrc: "img/cape-town.jpg", woeId: "3369157"},
+        {name: "London", imageSrc: "img/london.jpg", woeId: "2643743"},
+        {name: "New Delhi", imageSrc: "img/delhi.jpg", woeId: "1273840"},
+        {name: "New York", imageSrc: "img/new-york.jpg", woeId: "5128581"},
+        {name: "Paris", imageSrc: "img/paris.jpg", woeId: "2988507"},
+        {name: "Sydney", imageSrc: "img/sydney.jpg", woeId: "2147714"},
+        {name: "Tokyo", imageSrc: "img/tokyo.jpg", woeId: "1850147"},
+        {name: "Vancouver", imageSrc: "img/vancouver.jpg", woeId: "6173331"}
     ];
 
     constructor(private http: Http) {}
@@ -53,17 +42,20 @@ export class WeatherService {
         return this.http.get(url).toPromise()
             .then(x => {
                 const apiResponse = x.json() as WeatherApiResponse;
-                const weather = apiResponse.query.results.channel.item.condition;
+                const weatherCode = apiResponse.code;
+                const weatherDesc = apiResponse.description;
+                const weatherTemp = apiResponse.temp;
                 return {
                     city: this.getCityName(woeId),
-                    code: Number(weather.code),
-                    temperature: Number(weather.temp)
+                    code: Number(weatherCode),
+                    description: weatherDesc,
+                    temperature: Number(weatherTemp)
                 } as WeatherInformation;
             });
     }
 
     private generateWeatherUrl(woeId: string) {
-        return `http://localhost:8001/api/weather/${woeId}`;
+        return `http://localhost:3011/api/weather/${woeId}`;
     }
 
     private getCityName(woeId: string) {

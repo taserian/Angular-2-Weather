@@ -5,8 +5,7 @@ import WeatherComponent from "./weather.component";
 
 const routes: Routes = [
     {path: "weather/:woeId", component: WeatherComponent },
-    {path: "cities", component: CityListComponent },
-    {path: "", redirectTo: "/cities", pathMatch: "full" }
+    {path: "", component: CityListComponent }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes);

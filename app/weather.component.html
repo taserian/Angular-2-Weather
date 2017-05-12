@@ -1,5 +1,10 @@
 <div class="weather-component">
     <h2 *ngIf="!weatherExists()">Loading ... </h2>
     <h2 *ngIf="weatherExists()">Current conditions in {{ weather.city }}:</h2>
-    <div class="weather" *ngIf="weatherExists()">{{ weather.temperature }} C <i class="wi wi-yahoo-{{ weather.code }}"></i></div>
+    <div class="weather" *ngIf="weatherExists()">{{ weather.temperature }} C 
+        <i class="wi wi-owm-{{ weather.code }}">
+            <span style="font-size:8pt">{{ weather.description }}
+            </span>
+        </i>
+    </div>
 </div>
